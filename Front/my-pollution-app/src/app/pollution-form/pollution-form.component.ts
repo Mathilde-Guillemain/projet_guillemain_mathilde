@@ -44,10 +44,25 @@ export class PollutionFormComponent {
 
   ngOnChanges() {
     if (this.pollutionToEdit) {
-      this.pollutionForm.patchValue(this.pollutionToEdit);
+      // Mapper les champs de l'API vers le formulaire
+      const pollution = this.pollutionToEdit as any;
+      
+      this.pollutionForm.patchValue({
+        id: pollution.id,
+        titre: pollution.titre,
+        type: pollution.type || pollution.type_pollution,
+        description: pollution.description,
+        dateObservation: pollution.dateObservation || pollution.date_observation || pollution.date,
+        lieu: pollution.lieu,
+        latitude: pollution.latitude,
+        longitude: pollution.longitude,
+        photo: pollution.photo || pollution.photo_url || pollution.photoUrl || ''
+      });
+      
       // Si l'édition a une photo, l'afficher
-      if ((this.pollutionToEdit as any).photo) {
-        this.imagePreview = (this.pollutionToEdit as any).photo;
+      const photoUrl = pollution.photo || pollution.photo_url || pollution.photoUrl;
+      if (photoUrl) {
+        this.imagePreview = photoUrl;
       }
     } else {
       this.pollutionForm.reset();
