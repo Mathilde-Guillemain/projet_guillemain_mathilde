@@ -44,11 +44,18 @@ export class PollutionService {
     
     return this.getPollutions().pipe(
       map(pollutions => 
-        pollutions.filter(p => 
-          (p.titre && p.titre.toLowerCase().includes(lowerTerm)) ||
-          (p.lieu && p.lieu.toLowerCase().includes(lowerTerm)) ||
-          (p.type && p.type.toLowerCase().includes(lowerTerm))
-        )
+        pollutions.filter(p => {
+          // Support des deux formats : ancien et nouveau (avec auteur)
+          const titre = p.titre || '';
+          const lieu = p.lieu || '';
+          const type = p.type || (p as any).type_pollution || '';
+          
+          return (
+            titre.toLowerCase().includes(lowerTerm) ||
+            lieu.toLowerCase().includes(lowerTerm) ||
+            type.toLowerCase().includes(lowerTerm)
+          );
+        })
       ),
       tap(results => console.log(`Recherche '${term}': ${results.length} résultats trouvés`)),
       catchError(err => {

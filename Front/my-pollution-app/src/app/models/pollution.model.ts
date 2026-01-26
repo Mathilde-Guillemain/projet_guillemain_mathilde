@@ -1,5 +1,6 @@
 export interface Pollution {
     id?: number;
+    utilisateurId?: number;
     titre: string;
     type: string;
     description: string;
@@ -8,4 +9,9 @@ export interface Pollution {
     latitude: number;
     longitude: number;
     photo: string;
+    auteur?: {
+        id: number;
+        name: string;
+        email: string;
+    };
 }

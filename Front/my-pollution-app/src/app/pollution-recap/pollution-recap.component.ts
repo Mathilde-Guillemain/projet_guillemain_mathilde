@@ -1,5 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../services/user.service';
+import { User } from '../models/user.model';
 
 @Component({
   selector: 'app-pollution-recap',
@@ -12,7 +14,47 @@ export class PollutionRecapComponent {
   @Input() pollutionData: any;
   @Output() homeClicked = new EventEmitter<void>();
   
+  authorName = 'Inconnu';
+  authorEmail = '';
   showFullImage = false;
+
+  constructor(private userService: UserService) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['pollutionData'] && this.pollutionData) {
+      this.resolveAuthor();
+    }
+  }
+
+  /**
+   * Résout l'auteur : priorité à l'objet inclus, sinon fetch par utilisateurId
+   */
+  private resolveAuthor() {
+    // Si l'API renvoie déjà l'auteur inclus
+    if (this.pollutionData?.auteur) {
+      this.authorName = this.pollutionData.auteur.name || 'Inconnu';
+      this.authorEmail = this.pollutionData.auteur.email || '';
+      return;
+    }
+
+    // Sinon, si on a l'ID utilisateur
+    const userId = this.pollutionData?.utilisateurId || this.pollutionData?.utilisateur_id;
+    if (userId) {
+      this.userService.getUserById(userId).subscribe({
+        next: (user: User) => {
+          this.authorName = user.name || 'Inconnu';
+          this.authorEmail = user.email || '';
+        },
+        error: () => {
+          this.authorName = 'Inconnu';
+          this.authorEmail = '';
+        }
+      });
+    } else {
+      this.authorName = 'Inconnu';
+      this.authorEmail = '';
+    }
+  }
 
   /**
    * Basculer l'affichage de l'image en plein écran
@@ -48,6 +90,14 @@ export class PollutionRecapComponent {
       day: 'numeric'
     });
   }
+
+  /**
+   * Obtenir le nom de l'auteur (découvreur)
+   */
+  getAuthorName(): string {
+    return this.authorName || 'Inconnu';
+  }
+
 
   goHome() {
     this.homeClicked.emit();
