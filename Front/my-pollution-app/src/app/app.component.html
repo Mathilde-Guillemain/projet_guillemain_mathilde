@@ -7,8 +7,6 @@
     <a routerLink="/favorites" routerLinkActive="active" class="nav-favorites">
       ❤️ Favoris <span *ngIf="favoriteCount$ | async as count" class="badge">{{ count }}</span>
     </a>
-    <a routerLink="/utilisateur" routerLinkActive="active">Utilisateurs</a>
-    <a routerLink="/add-user" routerLinkActive="active">Ajouter utilisateur</a>
   </nav>
   <div class="navbar-user">
     <span *ngIf="user$ | async as user" class="user-info">👤 {{ user.name }}</span>
