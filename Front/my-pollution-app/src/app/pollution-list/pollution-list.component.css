@@ -3,6 +3,37 @@ h1 {
   color: #333;
 }
 
+/* Styles pour la barre de recherche */
+.search-container {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.search-info {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
 button {
   margin: 5px;
   padding: 8px 12px;

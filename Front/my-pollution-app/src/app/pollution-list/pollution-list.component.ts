@@ -1,30 +1,39 @@
 import { PollutionFormComponent } from '../pollution-form/pollution-form.component';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { PollutionService} from '../services/pollution.service';
 import { Pollution } from '../models/pollution.model';
 // ...existing code...
 import { PollutionRecapComponent } from '../pollution-recap/pollution-recap.component';
 import { Store } from '@ngxs/store';
 import { AddFavorite, RemoveFavorite, FavoritesState } from '../store/favorites.state';
-import { Observable } from 'rxjs';
+import { Observable, fromEvent, of } from 'rxjs';
+import { map, debounceTime, distinctUntilChanged, switchMap, catchError, startWith } from 'rxjs/operators';
 
 
 @Component({
   selector: 'app-pollution-list',
   standalone: true,
-  imports: [CommonModule, PollutionFormComponent, PollutionRecapComponent],
+  imports: [CommonModule, FormsModule, PollutionFormComponent, PollutionRecapComponent],
   templateUrl: './pollution-list.component.html',
   styleUrls: ['./pollution-list.component.css']
 })
-export class PollutionListComponent implements OnInit {
+export class PollutionListComponent implements OnInit, AfterViewInit {
   pollutions$!: Observable<Pollution[]>;
+  searchField$!: Observable<any>;
+  @ViewChild('searchInput', { static: false }) searchInput: ElementRef | null = null;
+  
   favoritesIds: number[] = [];
   showForm = false;
   pollutionToEdit: Pollution | null = null;
   selectedPollution: Pollution | null = null;
+  searchTerm = '';
 
-  constructor(private pollutionService: PollutionService, private store: Store) {}
+  constructor(private pollutionService: PollutionService, private store: Store) {
+    // Initialiser avec la liste complète
+    this.pollutions$ = this.pollutionService.getPollutions();
+  }
 
   ngOnInit() {
     this.pollutions$ = this.pollutionService.getPollutions();
@@ -32,6 +41,61 @@ export class PollutionListComponent implements OnInit {
     this.store.select(FavoritesState.getFavoriteIds).subscribe(ids => {
       this.favoritesIds = ids?.filter((id): id is number => id !== undefined) || [];
     });
+  }
+
+  ngAfterViewInit() {
+    // Initialiser la recherche dynamique après que la vue soit initialisée
+    if (this.searchInput) {
+      this.searchField$ = fromEvent<any>(this.searchInput.nativeElement, 'keyup');
+      
+      this.pollutions$ = this.searchField$.pipe(
+        // Extraire la valeur du champ
+        map(event => event.target.value),
+        // Attendre 300ms après que l'utilisateur arrête de taper
+        debounceTime(300),
+        // Ne pas émettre si la valeur n'a pas changé
+        distinctUntilChanged(),
+        // Afficher dans la console pour le debug
+        map(term => {
+          console.log('Recherche lancée pour:', term);
+          this.searchTerm = term;
+          return term;
+        }),
+        // Basculer vers la recherche
+        switchMap(term =>
+          this.pollutionService.searchPollutions(term).pipe(
+            // En cas d'erreur, retourner une liste vide
+            catchError(err => {
+              console.error('Erreur lors de la recherche:', err);
+              return of([]);
+            })
+          )
+        ),
+        // Démarrer avec la liste complète
+        startWith([])
+      );
+      
+      // Charger la liste initiale
+      this.pollutions$ = this.pollutionService.getPollutions().pipe(
+        switchMap(initialList => 
+          this.searchField$.pipe(
+            map(event => event.target.value),
+            debounceTime(300),
+            distinctUntilChanged(),
+            map(term => {
+              console.log('Terme de recherche:', term);
+              return term;
+            }),
+            switchMap(term =>
+              this.pollutionService.searchPollutions(term).pipe(
+                catchError(() => of([]))
+              )
+            ),
+            startWith(initialList)
+          )
+        )
+      );
+    }
   }
 
   isFavorite(id: number | undefined): boolean {

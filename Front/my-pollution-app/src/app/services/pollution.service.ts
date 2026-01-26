@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, throwError, tap } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Pollution } from '../models/pollution.model';
 
 @Injectable({
@@ -25,6 +26,34 @@ export class PollutionService {
       catchError(err => {
         console.error(`Erreur lors du chargement de la pollution ${id}`, err);
         return throwError(() => new Error('Pollution introuvable'));
+      })
+    );
+  }
+
+  /**
+   * Recherche dynamique de pollutions par titre, lieu ou type
+   * Filtre côté client pour une réactivité instantanée
+   * @param term Le terme de recherche
+   */
+  searchPollutions(term: string): Observable<Pollution[]> {
+    if (!term.trim()) {
+      return this.getPollutions();
+    }
+    
+    const lowerTerm = term.toLowerCase();
+    
+    return this.getPollutions().pipe(
+      map(pollutions => 
+        pollutions.filter(p => 
+          (p.titre && p.titre.toLowerCase().includes(lowerTerm)) ||
+          (p.lieu && p.lieu.toLowerCase().includes(lowerTerm)) ||
+          (p.type && p.type.toLowerCase().includes(lowerTerm))
+        )
+      ),
+      tap(results => console.log(`Recherche '${term}': ${results.length} résultats trouvés`)),
+      catchError(err => {
+        console.error('Erreur lors de la recherche', err);
+        return throwError(() => new Error('Erreur lors de la recherche'));
       })
     );
   }

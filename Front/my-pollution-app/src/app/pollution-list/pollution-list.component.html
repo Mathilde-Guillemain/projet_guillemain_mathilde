@@ -1,5 +1,14 @@
 <h1>Liste des pollutions</h1>
 
+<div class="search-container">
+  <input 
+    #searchInput
+    type="text" 
+    placeholder="🔍 Rechercher par titre, lieu ou type..." 
+    class="search-input">
+  <span *ngIf="searchTerm" class="search-info">Résultats pour: <strong>{{ searchTerm }}</strong></span>
+</div>
+
 <button (click)="addNew()">+ Ajouter une pollution</button>
 
 <ul>
