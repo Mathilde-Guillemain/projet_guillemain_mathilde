@@ -39,19 +39,8 @@ export class AuthService {
     return this.http.get<User>(`${this.apiUrl}/me`);
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('auth_token');
-  }
-
-  saveToken(token: string): void {
-    localStorage.setItem('auth_token', token);
-  }
-
-  removeToken(): void {
-    localStorage.removeItem('auth_token');
-  }
-
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    // L'authentification est vérifiée via le store
+    return true;
   }
 }

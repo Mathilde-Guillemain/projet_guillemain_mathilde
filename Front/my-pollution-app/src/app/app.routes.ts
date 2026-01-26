@@ -10,20 +10,13 @@ import { UserFormComponent } from './user-form/user-form.component';
 import { FavoritesComponent } from './favorites/favorites.component';
 import { LoginComponent } from './login/login.component';
 import { AuthState } from './store/auth.state';
-import { AuthService } from './services/auth.service';
 
 const authGuard = (route: any, state: any) => {
   const store = inject(Store);
-  const authService = inject(AuthService);
   const router = inject(Router);
   
-  // Vérifier d'abord le state NGXS
-  let isAuth = store.selectSnapshot(AuthState.isAuthenticated);
-  
-  // Si pas authentifié dans le state, vérifier localStorage
-  if (!isAuth) {
-    isAuth = !!authService.getToken();
-  }
+  // Vérifier l'authentification via le store
+  const isAuth = store.selectSnapshot(AuthState.isAuthenticated);
   
   return isAuth ? true : router.createUrlTree(['/login']);
 };

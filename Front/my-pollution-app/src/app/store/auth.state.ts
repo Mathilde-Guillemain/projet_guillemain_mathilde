@@ -1,8 +1,11 @@
-import { State, Action, StateContext, Selector } from '@ngxs/store';
+import { State, Action, StateContext, Selector, NgxsOnInit } from '@ngxs/store';
 import { AuthService, User, AuthResponse } from '../services/auth.service';
 import { Injectable } from '@angular/core';
 import { tap, catchError } from 'rxjs/operators';
 import { of, throwError } from 'rxjs';
+
+// Storage key
+const AUTH_STORAGE_KEY = 'auth_state';
 
 // Actions
 export class Register {
@@ -50,8 +53,42 @@ export interface AuthStateModel {
   }
 })
 @Injectable()
-export class AuthState {
+export class AuthState implements NgxsOnInit {
   constructor(private authService: AuthService) {}
+
+  ngxsOnInit(ctx: StateContext<AuthStateModel>) {
+    // Restaurer l'état depuis sessionStorage au démarrage
+    const savedState = this.getSavedState();
+    if (savedState) {
+      ctx.patchState(savedState);
+    }
+  }
+
+  private getSavedState(): AuthStateModel | null {
+    try {
+      const saved = sessionStorage.getItem(AUTH_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.error('Erreur lecture sessionStorage:', e);
+      return null;
+    }
+  }
+
+  private saveState(state: AuthStateModel): void {
+    try {
+      sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.error('Erreur écriture sessionStorage:', e);
+    }
+  }
+
+  private clearState(): void {
+    try {
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch (e) {
+      console.error('Erreur suppression sessionStorage:', e);
+    }
+  }
 
   @Selector()
   static isAuthenticated(state: AuthStateModel): boolean {
@@ -84,8 +121,7 @@ export class AuthState {
     return this.authService.register(action.payload.name, action.payload.email, action.payload.password)
       .pipe(
         tap((response: AuthResponse) => {
-          this.authService.saveToken(response.token);
-          ctx.patchState({
+          const newState = {
             user: {
               id: response.id,
               name: response.name,
@@ -94,7 +130,9 @@ export class AuthState {
             token: response.token,
             loading: false,
             error: null
-          });
+          };
+          ctx.patchState(newState);
+          this.saveState(ctx.getState());
         }),
         catchError((error) => {
           const errorMessage = error.error?.message || 'Erreur lors de l\'enregistrement';
@@ -104,6 +142,7 @@ export class AuthState {
             user: null,
             token: null
           });
+          this.clearState();
           return of(null);
         })
       );
@@ -115,8 +154,7 @@ export class AuthState {
     return this.authService.login(action.payload.email, action.payload.password)
       .pipe(
         tap((response: AuthResponse) => {
-          this.authService.saveToken(response.token);
-          ctx.patchState({
+          const newState = {
             user: {
               id: response.id,
               name: response.name,
@@ -125,7 +163,9 @@ export class AuthState {
             token: response.token,
             loading: false,
             error: null
-          });
+          };
+          ctx.patchState(newState);
+          this.saveState(ctx.getState());
         }),
         catchError((error) => {
           const errorMessage = error.error?.message || 'Email ou mot de passe incorrect';
@@ -135,6 +175,7 @@ export class AuthState {
             user: null,
             token: null
           });
+          this.clearState();
           return of(null);
         })
       );
@@ -146,13 +187,13 @@ export class AuthState {
     return this.authService.logout()
       .pipe(
         tap(() => {
-          this.authService.removeToken();
           ctx.patchState({
             user: null,
             token: null,
             loading: false,
             error: null
           });
+          this.clearState();
         })
       );
   }
@@ -169,18 +210,19 @@ export class AuthState {
 
   @Action(InitAuth)
   initAuth(ctx: StateContext<AuthStateModel>) {
-    const token = this.authService.getToken();
+    const state = ctx.getState();
+    const token = state.token;
     if (token) {
-      ctx.patchState({ token });
       return this.authService.getCurrentUser()
         .pipe(
           tap((user: User) => {
             ctx.patchState({ user, token });
+            this.saveState(ctx.getState());
           }),
           catchError(() => {
             // Si l'authentification échoue, nettoyer
-            this.authService.removeToken();
             ctx.patchState({ token: null, user: null });
+            this.clearState();
             return of(null);
           })
         );
