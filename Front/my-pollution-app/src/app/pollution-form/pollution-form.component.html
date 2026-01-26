@@ -26,8 +26,40 @@
   <label>Longitude :</label>
   <input type="number" formControlName="longitude">
   
-  <label>Photo (URL) :</label>
-  <input type="text" formControlName="photoUrl">
+  <!-- Nouvelle section upload d'image -->
+  <div class="image-upload-section">
+    <label>Photo :</label>
+    
+    <!-- Prévisualisation de l'image -->
+    <div *ngIf="imagePreview" class="image-preview-container">
+      <img [src]="imagePreview" alt="Aperçu de la photo" class="image-preview">
+      <div class="image-info">
+        <p *ngIf="selectedFileName">Fichier: {{ selectedFileName }}</p>
+      </div>
+      <button type="button" (click)="removeImage()" class="btn-remove-image">
+        ✕ Supprimer la photo
+      </button>
+    </div>
+    
+    <!-- Upload button -->
+    <button 
+      type="button" 
+      (click)="openFileDialog()"
+      class="btn-upload"
+      [disabled]="isUploadingImage">
+      {{ isUploadingImage ? '⏳ Conversion en cours...' : '📸 Sélectionner une photo' }}
+    </button>
+    
+    <!-- Input file caché -->
+    <input 
+      #fileInput
+      type="file" 
+      accept="image/*" 
+      (change)="onImageSelected($event)"
+      style="display: none;">
+    
+    <p class="help-text">Formats acceptés: JPG, PNG, GIF, WebP (Max 5MB)</p>
+  </div>
   
   <button type="submit" [disabled]="pollutionForm.invalid">
     {{ pollutionToEdit ? 'Mettre à jour' : 'Ajouter' }}

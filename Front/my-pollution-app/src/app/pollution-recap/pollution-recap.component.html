@@ -1,17 +1,62 @@
 <div class="recap-container">
-  <h2>Récapitulatif de la pollution déclarée</h2>
+  <h2>Détails de la pollution</h2>
 
-  <p><strong>Titre :</strong> {{ pollutionData?.titre }}</p>
-  <p><strong>Type :</strong> {{ pollutionData?.type }}</p>
-  <p><strong>Description :</strong> {{ pollutionData?.description }}</p>
-  <p><strong>Date :</strong> {{ pollutionData?.dateObservation }}</p>
-  <p><strong>Lieu :</strong> {{ pollutionData?.lieu }}</p>
-  <p><strong>Latitude :</strong> {{ pollutionData?.latitude }}</p>
-  <p><strong>Longitude :</strong> {{ pollutionData?.longitude }}</p>
-
-  <div *ngIf="pollutionData?.photoUrl">
+  <!-- Image avec modal -->
+  <div class="image-section" *ngIf="getPhotoUrl()">
     <p><strong>Photo :</strong></p>
-    <img [src]="pollutionData.photoUrl" width="300">
+    <img 
+      [src]="getPhotoUrl()" 
+      alt="Photo de pollution"
+      class="recap-image"
+      (click)="toggleFullImage()"
+      title="Cliquer pour agrandir">
+    <p class="image-info" *ngIf="isBase64Image()">📸 Photo uploadée</p>
+    <p class="image-info" *ngIf="!isBase64Image()">🔗 Photo (URL)</p>
   </div>
-  <button (click)="goHome()">Accueil</button>
+
+  <!-- Modal image plein écran -->
+  <div class="image-modal" *ngIf="showFullImage" (click)="toggleFullImage()">
+    <div class="modal-content">
+      <img [src]="getPhotoUrl()" alt="Photo agrandie">
+      <button class="close-btn" (click)="toggleFullImage()">✕ Fermer</button>
+    </div>
+  </div>
+
+  <!-- Informations détaillées -->
+  <div class="info-grid">
+    <div class="info-item">
+      <strong>Titre :</strong>
+      <p>{{ pollutionData?.titre }}</p>
+    </div>
+
+    <div class="info-item">
+      <strong>Type :</strong>
+      <p>{{ pollutionData?.type || pollutionData?.type_pollution }}</p>
+    </div>
+
+    <div class="info-item">
+      <strong>Date d'observation :</strong>
+      <p>{{ formatDate(pollutionData?.date_observation || pollutionData?.dateObservation) }}</p>
+    </div>
+
+    <div class="info-item">
+      <strong>Lieu :</strong>
+      <p>{{ pollutionData?.lieu }}</p>
+    </div>
+
+    <div class="info-item">
+      <strong>Coordonnées GPS :</strong>
+      <p>
+        Lat: {{ pollutionData?.latitude }}<br>
+        Long: {{ pollutionData?.longitude }}
+      </p>
+    </div>
+
+    <div class="info-item full-width">
+      <strong>Description :</strong>
+      <p>{{ pollutionData?.description }}</p>
+    </div>
+  </div>
+
+  <button (click)="goHome()" class="btn-home">← Retour</button>
 </div>
