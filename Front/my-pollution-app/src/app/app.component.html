@@ -1,0 +1,22 @@
+<div *ngIf="isAuthenticated$ | async" class="navbar">
+  <div class="navbar-brand">
+    <h1>🌿 Gestion des pollutions</h1>
+  </div>
+  <nav class="navbar-nav">
+    <a routerLink="/pollutions" routerLinkActive="active">Pollutions</a>
+    <a routerLink="/favorites" routerLinkActive="active" class="nav-favorites">
+      ❤️ Favoris <span *ngIf="favoriteCount$ | async as count" class="badge">{{ count }}</span>
+    </a>
+    <a routerLink="/utilisateur" routerLinkActive="active">Utilisateurs</a>
+    <a routerLink="/add-user" routerLinkActive="active">Ajouter utilisateur</a>
+  </nav>
+  <div class="navbar-user">
+    <span *ngIf="user$ | async as user" class="user-info">👤 {{ user.name }}</span>
+    <button (click)="logout()" class="btn-logout">Déconnexion</button>
+  </div>
+</div>
+
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+

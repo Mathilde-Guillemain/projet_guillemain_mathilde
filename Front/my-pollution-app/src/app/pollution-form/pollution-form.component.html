@@ -1,0 +1,36 @@
+<h2>{{ pollutionToEdit ? 'Modifier la pollution' : 'Ajouter une pollution' }}</h2>
+
+<form [formGroup]="pollutionForm" (ngSubmit)="onSubmit()">
+
+  <label>Titre :</label>
+  <input type="text" formControlName="titre">
+  
+  <label>Type :</label>
+  <select formControlName="type">
+    <option value="">--Sélectionnez--</option>
+    <option *ngFor="let t of typesPollution" [value]="t">{{ t }}</option>
+  </select>
+  
+  <label>Description :</label>
+  <textarea formControlName="description"></textarea>
+  
+  <label>Date :</label>
+  <input type="date" formControlName="dateObservation">
+  
+  <label>Lieu :</label>
+  <input type="text" formControlName="lieu">
+  
+  <label>Latitude :</label>
+  <input type="number" formControlName="latitude">
+  
+  <label>Longitude :</label>
+  <input type="number" formControlName="longitude">
+  
+  <label>Photo (URL) :</label>
+  <input type="text" formControlName="photoUrl">
+  
+  <button type="submit" [disabled]="pollutionForm.invalid">
+    {{ pollutionToEdit ? 'Mettre à jour' : 'Ajouter' }}
+  </button>
+  <button type="button" (click)="cancel()">Annuler</button>
+</form>

@@ -1,0 +1,26 @@
+{
+  "pollutions": [
+    {
+      "id": 1,
+      "titre": "Déversement d’hydrocarbures",
+      "type": "Chimique",
+      "description": "Fuite d’un camion-citerne sur la route nationale",
+      "dateObservation": "2025-10-20",
+      "lieu": "Toulouse",
+      "latitude": 43.6045,
+      "longitude": 1.4442,
+      "photoUrl": "assets/images/pollution1.jpg"
+    },
+    {
+      "id": 2,
+      "titre": "Pollution plastique sur la plage",
+      "type": "Plastique",
+      "description": "Accumulation de déchets plastiques près du port",
+      "dateObservation": "2025-10-22",
+      "lieu": "La Rochelle",
+      "latitude": 46.1591,
+      "longitude": -1.1522,
+      "photoUrl": "assets/images/pollution2.jpg"
+    }
+  ]
+}

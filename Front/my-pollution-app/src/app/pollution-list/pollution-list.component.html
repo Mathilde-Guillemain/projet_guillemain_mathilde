@@ -1,0 +1,35 @@
+<h1>Liste des pollutions</h1>
+
+<button (click)="addNew()">+ Ajouter une pollution</button>
+
+<ul>
+  <li *ngFor="let p of (pollutions$ | async)">
+    <strong (click)="showDetails(p)" style="cursor:pointer; color:blue">{{ p.titre }}</strong>
+    — {{ p.type }} à {{ p.lieu }}
+    <button (click)="edit(p)">✏️ Modifier</button>
+    <button (click)="delete(p)">🗑️ Supprimer</button>
+    <button 
+      (click)="toggleFavorite(p)" 
+      [class.is-favorite]="isFavorite(p.id)"
+      class="btn-favorite">
+      {{ isFavorite(p.id) ? '❤️ Retirer des favoris' : '🤍 Ajouter aux favoris' }}
+    </button>
+  </li>
+</ul>
+
+<hr>
+
+<app-pollution-form 
+  *ngIf="showForm" 
+  [pollutionToEdit]="pollutionToEdit" 
+  (formSubmitted)="formClosed()">
+</app-pollution-form>
+
+
+
+<app-pollution-recap 
+  *ngIf="selectedPollution" 
+  [pollutionData]="selectedPollution"
+  (homeClicked)="selectedPollution = null">
+</app-pollution-recap>
+

@@ -1,0 +1,9 @@
+
+
+<h2>Liste des utilisateurs</h2>
+<ul>
+  <li *ngFor="let user of users">
+    {{ user.name }} ({{ user.email }})
+    <button (click)="deleteUser(user.id!)">Supprimer</button>
+  </li>
+</ul>

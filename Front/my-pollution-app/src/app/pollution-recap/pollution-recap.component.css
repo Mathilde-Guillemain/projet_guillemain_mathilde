@@ -1,0 +1,29 @@
+.recap-container {
+  background-color: #e8f5e9;
+  border: 2px solid #81c784;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 30px auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.recap-container h2 {
+  color: #2e7d32;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.recap-container p {
+  color: #1b5e20;
+  margin: 8px 0;
+}
+
+.recap-container img {
+  display: block;
+  margin: 15px auto;
+  border-radius: 10px;
+  max-width: 100%;
+  height: auto;
+}
+

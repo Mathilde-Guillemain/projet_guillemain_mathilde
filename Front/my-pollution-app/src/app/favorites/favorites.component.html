@@ -1,0 +1,19 @@
+<h1>❤️ Mes favoris</h1>
+
+<div *ngIf="(favorites$ | async) as favList">
+  <p *ngIf="favList.length === 0" class="no-favorites">Vous n'avez pas encore de favoris.</p>
+  
+  <ul *ngIf="favList.length > 0" class="favorites-list">
+    <li *ngFor="let pollution of favList" class="favorite-item">
+      <div class="pollution-info">
+        <strong>{{ pollution.titre }}</strong>
+        <p>Type: {{ pollution.type }}</p>
+        <p>Lieu: {{ pollution.lieu }}</p>
+        <p>Date: {{ pollution.date | date: 'dd/MM/yyyy' }}</p>
+      </div>
+      <button (click)="removeFavorite(pollution.id)" class="btn-remove">
+        ❌ Retirer des favoris
+      </button>
+    </li>
+  </ul>
+</div>
