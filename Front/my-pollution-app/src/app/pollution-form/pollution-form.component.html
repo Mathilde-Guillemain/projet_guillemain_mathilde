@@ -1,4 +1,4 @@
-<h2>{{ pollutionToEdit ? 'Modifier la pollution' : 'Ajouter une pollution' }}</h2>
+<h2>{{ isEditMode ? 'Modifier la pollution' : 'Ajouter une pollution' }}</h2>
 
 <form [formGroup]="pollutionForm" (ngSubmit)="onSubmit()">
 
@@ -62,7 +62,7 @@
   </div>
   
   <button type="submit" [disabled]="pollutionForm.invalid">
-    {{ pollutionToEdit ? 'Mettre à jour' : 'Ajouter' }}
+    {{ isEditMode ? 'Mettre à jour' : 'Ajouter' }}
   </button>
   <button type="button" (click)="cancel()">Annuler</button>
 </form>

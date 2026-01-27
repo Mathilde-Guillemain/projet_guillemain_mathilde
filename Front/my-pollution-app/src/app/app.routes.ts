@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { PollutionListComponent } from './pollution-list/pollution-list.component';
-// ...existing code...
+import { PollutionFormComponent } from './pollution-form/pollution-form.component';
 import { PollutionRecapComponent } from './pollution-recap/pollution-recap.component';
 import { FavoritesComponent } from './favorites/favorites.component';
 import { LoginComponent } from './login/login.component';
@@ -28,13 +28,23 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   { 
-    path: 'favorites', 
-    component: FavoritesComponent,
+    path: 'pollution/new', 
+    component: PollutionFormComponent,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'pollution/edit/:id', 
+    component: PollutionFormComponent,
     canActivate: [authGuard]
   },
   { 
     path: 'pollution/:id', 
     component: PollutionRecapComponent,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'favorites', 
+    component: FavoritesComponent,
     canActivate: [authGuard]
   },
 ];

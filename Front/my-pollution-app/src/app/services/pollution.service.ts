@@ -21,13 +21,17 @@ export class PollutionService {
     );
   }
 
-  getOne(id: number): Observable<Pollution> {
+  getPollutionById(id: number): Observable<Pollution> {
     return this.http.get<Pollution>(`${this.apiUrl}/${id}`).pipe(
       catchError(err => {
         console.error(`Erreur lors du chargement de la pollution ${id}`, err);
         return throwError(() => new Error('Pollution introuvable'));
       })
     );
+  }
+
+  getOne(id: number): Observable<Pollution> {
+    return this.getPollutionById(id);
   }
 
   /**
@@ -45,16 +49,14 @@ export class PollutionService {
     return this.getPollutions().pipe(
       map(pollutions => 
         pollutions.filter(p => {
-          // Support des deux formats : ancien et nouveau (avec auteur)
+          // Support des champs de l'API
           const titre = p.titre || '';
           const lieu = p.lieu || '';
-          const type = p.type || (p as any).type_pollution || '';
+          const type = p.type_pollution || '';
           
-          return (
-            titre.toLowerCase().includes(lowerTerm) ||
-            lieu.toLowerCase().includes(lowerTerm) ||
-            type.toLowerCase().includes(lowerTerm)
-          );
+          return titre.toLowerCase().includes(lowerTerm) ||
+                 lieu.toLowerCase().includes(lowerTerm) ||
+                 type.toLowerCase().includes(lowerTerm);
         })
       ),
       tap(results => console.log(`Recherche '${term}': ${results.length} résultats trouvés`)),

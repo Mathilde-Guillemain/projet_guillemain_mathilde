@@ -1,7 +1,10 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
+import { PollutionService } from '../services/pollution.service';
 import { User } from '../models/user.model';
+import { Pollution } from '../models/pollution.model';
 
 @Component({
   selector: 'app-pollution-recap',
@@ -10,19 +13,32 @@ import { User } from '../models/user.model';
   templateUrl: './pollution-recap.component.html',
   styleUrls: ['./pollution-recap.component.css']
 })
-export class PollutionRecapComponent {
-  @Input() pollutionData: any;
-  @Output() homeClicked = new EventEmitter<void>();
+export class PollutionRecapComponent implements OnInit {
+  pollutionData: Pollution | null = null;
   
   authorName = 'Inconnu';
   authorEmail = '';
   showFullImage = false;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private pollutionService: PollutionService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['pollutionData'] && this.pollutionData) {
-      this.resolveAuthor();
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.pollutionService.getPollutionById(+id).subscribe({
+        next: (pollution) => {
+          this.pollutionData = pollution;
+          this.resolveAuthor();
+        },
+        error: () => {
+          this.router.navigate(['/pollutions']);
+        }
+      });
     }
   }
 
@@ -38,7 +54,7 @@ export class PollutionRecapComponent {
     }
 
     // Sinon, si on a l'ID utilisateur
-    const userId = this.pollutionData?.utilisateurId || this.pollutionData?.utilisateur_id;
+    const userId = this.pollutionData?.utilisateurId;
     if (userId) {
       this.userService.getUserById(userId).subscribe({
         next: (user: User) => {
@@ -72,10 +88,10 @@ export class PollutionRecapComponent {
   }
 
   /**
-   * Obtenir l'URL de la photo (compatible avec l'ancien et le nouveau format)
+   * Obtenir l'URL de la photo
    */
   getPhotoUrl(): string {
-    return this.pollutionData?.photo || this.pollutionData?.photo_url || this.pollutionData?.photoUrl || '';
+    return this.pollutionData?.photo_url || '';
   }
 
   /**
@@ -100,6 +116,6 @@ export class PollutionRecapComponent {
 
 
   goHome() {
-    this.homeClicked.emit();
+    this.router.navigate(['/pollutions']);
   }
 }

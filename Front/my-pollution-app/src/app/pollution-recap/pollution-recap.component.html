@@ -38,12 +38,12 @@
 
     <div class="info-item">
       <strong>Type :</strong>
-      <p>{{ pollutionData?.type || pollutionData?.type_pollution }}</p>
+      <p>{{ pollutionData?.type_pollution }}</p>
     </div>
 
     <div class="info-item">
       <strong>Date d'observation :</strong>
-      <p>{{ formatDate(pollutionData?.date_observation || pollutionData?.dateObservation) }}</p>
+      <p>{{ pollutionData && pollutionData.date_observation ? formatDate(pollutionData.date_observation) : 'Non spécifiée' }}</p>
     </div>
 
     <div class="info-item">

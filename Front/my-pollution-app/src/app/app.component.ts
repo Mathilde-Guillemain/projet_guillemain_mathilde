@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// ...existing code...
-import { PollutionListComponent } from './pollution-list/pollution-list.component';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { AuthState, Logout, InitAuth } from './store/auth.state';
@@ -12,7 +10,7 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, PollutionListComponent, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

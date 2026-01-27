@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PollutionService} from '../services/pollution.service';
 import { ImageService } from '../services/image.service';
 import { Pollution } from '../models/pollution.model';
@@ -13,9 +14,7 @@ import { Pollution } from '../models/pollution.model';
   templateUrl: './pollution-form.component.html',
   styleUrls: ['./pollution-form.component.css']
 })
-export class PollutionFormComponent {
-  @Input() pollutionToEdit: Pollution | null = null;
-  @Output() formSubmitted = new EventEmitter<void>();
+export class PollutionFormComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef | null = null;
   
   pollutionForm: FormGroup;
@@ -23,11 +22,15 @@ export class PollutionFormComponent {
   imagePreview: string | null = null;
   isUploadingImage = false;
   selectedFileName = '';
+  isEditMode = false;
+  pollutionId: number | null = null;
 
   constructor(
     private fb: FormBuilder, 
     private pollutionService: PollutionService,
-    private imageService: ImageService
+    private imageService: ImageService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.pollutionForm = this.fb.group({
       id: [null],
@@ -42,33 +45,38 @@ export class PollutionFormComponent {
     });
   }
 
-  ngOnChanges() {
-    if (this.pollutionToEdit) {
-      // Mapper les champs de l'API vers le formulaire
-      const pollution = this.pollutionToEdit as any;
-      
-      this.pollutionForm.patchValue({
-        id: pollution.id,
-        titre: pollution.titre,
-        type: pollution.type || pollution.type_pollution,
-        description: pollution.description,
-        dateObservation: pollution.dateObservation || pollution.date_observation || pollution.date,
-        lieu: pollution.lieu,
-        latitude: pollution.latitude,
-        longitude: pollution.longitude,
-        photo: pollution.photo || pollution.photo_url || pollution.photoUrl || ''
-      });
-      
-      // Si l'édition a une photo, l'afficher
-      const photoUrl = pollution.photo || pollution.photo_url || pollution.photoUrl;
-      if (photoUrl) {
-        this.imagePreview = photoUrl;
-      }
-    } else {
-      this.pollutionForm.reset();
-      this.imagePreview = null;
-      this.selectedFileName = '';
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode = true;
+      this.pollutionId = +id;
+      this.loadPollution(+id);
     }
+  }
+
+  loadPollution(id: number): void {
+    this.pollutionService.getPollutionById(id).subscribe({
+      next: (pollution) => {
+        this.pollutionForm.patchValue({
+          id: pollution.id,
+          titre: pollution.titre,
+          type: pollution.type_pollution,
+          description: pollution.description,
+          dateObservation: pollution.date_observation,
+          lieu: pollution.lieu,
+          latitude: pollution.latitude,
+          longitude: pollution.longitude,
+          photo: pollution.photo_url
+        });
+        
+        if (pollution.photo_url) {
+          this.imagePreview = pollution.photo_url;
+        }
+      },
+      error: () => {
+        this.router.navigate(['/pollutions']);
+      }
+    });
   }
 
   /**
@@ -162,7 +170,7 @@ export class PollutionFormComponent {
           this.pollutionForm.reset();
           this.imagePreview = null;
           this.selectedFileName = '';
-          this.formSubmitted.emit();
+          this.router.navigate(['/pollutions']);
         },
         error: (err) => {
           alert('Erreur lors de la modification');
@@ -175,7 +183,7 @@ export class PollutionFormComponent {
           this.pollutionForm.reset();
           this.imagePreview = null;
           this.selectedFileName = '';
-          this.formSubmitted.emit();
+          this.router.navigate(['/pollutions']);
         },
         error: (err) => {
           alert('Erreur lors de l\'ajout');
@@ -190,6 +198,6 @@ export class PollutionFormComponent {
     this.pollutionForm.reset();
     this.imagePreview = null;
     this.selectedFileName = '';
-    this.formSubmitted.emit();
+    this.router.navigate(['/pollutions']);
   }
 }

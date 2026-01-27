@@ -2,10 +2,9 @@ import { PollutionFormComponent } from '../pollution-form/pollution-form.compone
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { PollutionService} from '../services/pollution.service';
 import { Pollution } from '../models/pollution.model';
-// ...existing code...
-import { PollutionRecapComponent } from '../pollution-recap/pollution-recap.component';
 import { Store } from '@ngxs/store';
 import { AddFavorite, RemoveFavorite, FavoritesState } from '../store/favorites.state';
 import { Observable, fromEvent, of } from 'rxjs';
@@ -15,7 +14,7 @@ import { map, debounceTime, distinctUntilChanged, switchMap, catchError, startWi
 @Component({
   selector: 'app-pollution-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, PollutionFormComponent, PollutionRecapComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './pollution-list.component.html',
   styleUrls: ['./pollution-list.component.css']
 })
@@ -25,12 +24,13 @@ export class PollutionListComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput', { static: false }) searchInput: ElementRef | null = null;
   
   favoritesIds: number[] = [];
-  showForm = false;
-  pollutionToEdit: Pollution | null = null;
-  selectedPollution: Pollution | null = null;
   searchTerm = '';
 
-  constructor(private pollutionService: PollutionService, private store: Store) {
+  constructor(
+    private pollutionService: PollutionService, 
+    private store: Store,
+    private router: Router
+  ) {
     // Initialiser avec la liste complète
     this.pollutions$ = this.pollutionService.getPollutions();
   }
@@ -113,15 +113,13 @@ export class PollutionListComponent implements OnInit, AfterViewInit {
   }
 
   addNew() {
-  this.pollutionToEdit = null;
-  this.showForm = true;
-  this.selectedPollution = null;
+    this.router.navigate(['/pollution/new']);
   }
 
   edit(p: Pollution) {
-  this.pollutionToEdit = p;
-  this.showForm = true;
-  this.selectedPollution = null;
+    if (p.id) {
+      this.router.navigate(['/pollution/edit', p.id]);
+    }
   }
 
 
@@ -131,7 +129,6 @@ export class PollutionListComponent implements OnInit, AfterViewInit {
       this.pollutionService.deletePollution(p.id).subscribe({
         next: () => {
           this.refreshList();
-          this.selectedPollution = null;
         },
         error: (err) => {
           console.error('Delete error:', err);
@@ -147,15 +144,10 @@ export class PollutionListComponent implements OnInit, AfterViewInit {
   }
 
   showDetails(p: Pollution) {
-    this.selectedPollution = p;
-    this.showForm = false;
+    if (p.id) {
+      this.router.navigate(['/pollution', p.id]);
+    }
   }
-
-  formClosed() {
-  this.showForm = false;
-  this.refreshList();
-  this.selectedPollution = null;
-}
 
 
 }
