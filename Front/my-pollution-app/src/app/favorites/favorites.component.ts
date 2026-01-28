@@ -29,7 +29,6 @@ export class FavoritesComponent implements OnInit {
 
   clearAll() {
     if (confirm('Êtes-vous sûr de vouloir supprimer tous les favoris ?')) {
-      // Implémenter plus tard si besoin
     }
   }
 }

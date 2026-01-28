@@ -42,9 +42,7 @@ export class PollutionRecapComponent implements OnInit {
     }
   }
 
-  /**
-   * Résout l'auteur : priorité à l'objet inclus, sinon fetch par utilisateurId
-   */
+  //Résout l'auteur : priorité à l'objet inclus, sinon fetch par utilisateurId
   private resolveAuthor() {
     // Si l'API renvoie déjà l'auteur inclus
     if (this.pollutionData?.auteur) {
@@ -72,31 +70,23 @@ export class PollutionRecapComponent implements OnInit {
     }
   }
 
-  /**
-   * Basculer l'affichage de l'image en plein écran
-   */
+  //Basculer l'affichage de l'image en plein écran
   toggleFullImage() {
     this.showFullImage = !this.showFullImage;
   }
 
-  /**
-   * Vérifier si la photo est en base64 ou URL
-   */
+  //Vérifier si la photo est en base64 ou URL
   isBase64Image(): boolean {
     const photo = this.getPhotoUrl();
     return photo ? photo.startsWith('data:image') : false;
   }
 
-  /**
-   * Obtenir l'URL de la photo
-   */
+  //Obtenir l'URL de la photo
   getPhotoUrl(): string {
     return this.pollutionData?.photo_url || '';
   }
 
-  /**
-   * Formater la date
-   */
+  //Formater la date
   formatDate(dateString: string): string {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -107,9 +97,7 @@ export class PollutionRecapComponent implements OnInit {
     });
   }
 
-  /**
-   * Obtenir le nom de l'auteur (découvreur)
-   */
+  //Obtenir le nom de l'auteur (découvreur)
   getAuthorName(): string {
     return this.authorName || 'Inconnu';
   }

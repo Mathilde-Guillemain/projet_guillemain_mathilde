@@ -34,11 +34,7 @@ export class PollutionService {
     return this.getPollutionById(id);
   }
 
-  /**
-   * Recherche dynamique de pollutions par titre, lieu ou type
-   * Filtre côté client pour une réactivité instantanée
-   * @param term Le terme de recherche
-   */
+  //Recherche dynamique de pollutions par titre, lieu ou type
   searchPollutions(term: string): Observable<Pollution[]> {
     if (!term.trim()) {
       return this.getPollutions();

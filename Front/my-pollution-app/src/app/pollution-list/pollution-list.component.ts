@@ -148,6 +148,4 @@ export class PollutionListComponent implements OnInit, AfterViewInit {
       this.router.navigate(['/pollution', p.id]);
     }
   }
-
-
 }

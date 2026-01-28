@@ -79,18 +79,14 @@ export class PollutionFormComponent implements OnInit {
     });
   }
 
-  /**
-   * Ouvrir le dialog de sélection de fichier
-   */
+  //Ouvrir le dialog de sélection de fichier
   openFileDialog() {
     if (this.fileInput) {
       this.fileInput.nativeElement.click();
     }
   }
 
-  /**
-   * Gérer la sélection d'une image
-   */
+  // Gérer la sélection d'une image
   onImageSelected(event: any) {
     const file: File = event.target.files?.[0];
     
@@ -133,9 +129,7 @@ export class PollutionFormComponent implements OnInit {
     });
   }
 
-  /**
-   * Supprimer l'image sélectionnée
-   */
+  //Supprimer l'image sélectionnée
   removeImage() {
     this.imagePreview = null;
     this.selectedFileName = '';

@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'assets/pollutions.json' // chemin vers ton fichier JSON
+  apiUrl: 'https://apitemplate-latest-ahqi.onrender.com/api/pollution'
 };

@@ -26,9 +26,7 @@ export class StorageService {
     }
   }
 
-  /**
-   * Vérifie si localStorage contient des tokens
-   */
+  //Vérifie si localStorage contient des tokens
   hasTokensInStorage(): boolean {
     try {
       const keys = ['auth_token', 'token', 'access_token', 'refresh_token'];
@@ -39,9 +37,7 @@ export class StorageService {
     }
   }
 
-  /**
-   * Obtient tous les items du localStorage (pour debug)
-   */
+  //Obtient tous les items du localStorage (pour debug)
   getAllStorageItems(): { [key: string]: string } {
     try {
       const items: { [key: string]: string } = {};
