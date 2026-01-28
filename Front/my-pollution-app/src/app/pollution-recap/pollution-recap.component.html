@@ -16,7 +16,7 @@
 
   <!-- Modal image plein écran -->
   <div class="image-modal" *ngIf="showFullImage" (click)="toggleFullImage()">
-    <div class="modal-content">
+    <div class="modal-content" (click)="$event.stopPropagation()">
       <img [src]="getPhotoUrl()" alt="Photo agrandie">
       <button class="close-btn" (click)="toggleFullImage()">✕ Fermer</button>
     </div>
